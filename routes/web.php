@@ -17,36 +17,24 @@ Route::get('/', function () {
 });
 
 Route::get('/run-migrations', function () {
-    // Разрешаем только в продакшене и только авторизованным (если есть)
     if (!app()->environment('production')) {
         return 'Only available in production';
     }
     
     try {
-        // Запускаем миграции
         Artisan::call('migrate --force');
         $output = Artisan::output();
-        
-        // Создаём тестового пользователя для демонстрации
-        $testUser = \App\Models\User::factory()->create([
-            'name' => 'Demo User',
-            'email' => 'demo@example.com',
-            'password' => bcrypt('password'),
-        ]);
         
         return '<pre style="font-size:12px;">' . 
                "<strong>✅ Миграции выполнены!</strong>\n\n" . 
                $output . 
-               "\n\n<strong>Тестовый пользователь создан:</strong>\n" .
-               "Email: demo@example.com\n" .
-               "Password: password\n\n" .
-               "<strong>⚠️ УДАЛИ ЭТОТ РОУТ ИЗ routes/web.php ПОСЛЕ ПРОВЕРКИ!</strong>" .
+               "\n\n<strong>⚠️ УДАЛИ ЭТОТ РОУТ ПОСЛЕ ПРОВЕРКИ!</strong>" .
                '</pre>';
     } catch (\Exception $e) {
         return '<pre style="color:red;font-size:12px;"><strong>❌ Ошибка:</strong> ' . 
-               $e->getMessage() . "\n\n" . $e->getTraceAsString() . '</pre>';
+               $e->getMessage() . '</pre>';
     }
-});//->middleware('auth'); 
+});// ->middleware('auth'); // <-- закомментировано для первого запуска
 
 // 🖥️ Дашборд
 Route::get('/dashboard', function () {
