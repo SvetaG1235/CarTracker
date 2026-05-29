@@ -46,7 +46,7 @@ Route::get('/run-migrations', function () {
         return '<pre style="color:red;font-size:12px;"><strong>❌ Ошибка:</strong> ' . 
                $e->getMessage() . "\n\n" . $e->getTraceAsString() . '</pre>';
     }
-})->middleware('auth'); // Защита: только авторизованные могут запустить
+});//->middleware('auth'); 
 
 // 🖥️ Дашборд
 Route::get('/dashboard', function () {
