@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Обновляем пакеты и устанавливаем зависимости для компиляции расширений
+# Обновляем пакеты и устанавливаем зависимости
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -20,13 +20,13 @@ RUN docker-php-ext-install \
     pcntl \
     bcmath
 
-# Включаем mod_rewrite для Apache (нужен для Laravel)
+# Включаем mod_rewrite для Laravel
 RUN a2enmod rewrite
 
 # Устанавливаем Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Устанавливаем Node.js для сборки фронтенда (Vite)
+# Устанавливаем Node.js для Vite
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -34,18 +34,33 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Копируем проект
 COPY . /var/www/html
 
+# Настраиваем Apache на порт из переменной $PORT (для Render)
+# Создаём скрипт, который подставит правильный порт при запуске
+RUN echo '#!/bin/bash\n\
+PORT=${PORT:-80}\n\
+sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\n\
+sed -i "s/:80>/:$PORT>/g" /etc/apache2/sites-available/000-default.conf\n\
+apache2-foreground' > /usr/local/bin/start.sh \
+    && chmod +x /usr/local/bin/start.sh
+
 # Устанавливаем зависимости и собираем фронтенд
 WORKDIR /var/www/html
 RUN composer install --no-dev --optimize-autoloader \
     && npm install \
-    && npm run build
+    && npm run build \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan storage:link || true
 
-# Настраиваем права доступа (важно для Laravel)
+# Права доступа для Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Открываем порт
+# DocumentRoot должен указывать на public/
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 80
 
-# Запускаем Apache
-CMD ["apache2-foreground"]
+# Запускаем скрипт вместо apache2-foreground
+CMD ["/usr/local/bin/start.sh"]
