@@ -1,9 +1,10 @@
 FROM php:8.3-apache
 
-# Обновляем пакеты и устанавливаем зависимости
+# Обновляем пакеты и устанавливаем системные зависимости
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
+    libonig-dev \
     unzip \
     git \
     curl \
@@ -35,7 +36,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 COPY . /var/www/html
 
 # Настраиваем Apache на порт из переменной $PORT (для Render)
-# Создаём скрипт, который подставит правильный порт при запуске
 RUN echo '#!/bin/bash\n\
 PORT=${PORT:-80}\n\
 sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\n\
