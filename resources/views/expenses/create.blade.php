@@ -3,10 +3,10 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Внести расход</h4>
-    <a href="{{ route('expenses.index') }}" class="btn btn-outline-makk">Назад</a>
+    <a href="{{ route('expenses.index') }}" class="btn btn-outline-app">Назад</a>
 </div>
 
-<div class="card card-makk">
+<div class="card card-app">
     <div class="card-body">
         <form action="{{ route('expenses.store') }}" method="POST">
             @csrf
@@ -51,8 +51,8 @@
                 </div>
             </div>
             <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-makk">Сохранить</button>
-                <a href="{{ route('expenses.index') }}" class="btn btn-outline-makk">Отмена</a>
+                <button type="submit" class="btn btn-app">Сохранить</button>
+                <a href="{{ route('expenses.index') }}" class="btn btn-outline-app">Отмена</a>
             </div>
         </form>
     </div>

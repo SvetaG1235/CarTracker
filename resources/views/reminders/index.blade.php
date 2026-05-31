@@ -3,35 +3,35 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Напоминания о ТО</h4>
-    <a href="{{ route('reminders.create') }}" class="btn btn-makk">Создать напоминание</a>
+    <a href="{{ route('reminders.create') }}" class="btn btn-app">Создать напоминание</a>
 </div>
 
 {{-- Если совсем пусто --}}
 @if(collect($groups)->flatten()->isEmpty())
-    <div class="text-center text-muted py-5 card card-makk">
+    <div class="text-center text-muted py-5 card card-app">
         <div class="card-body">
             <h4 class="fw-bold mb-3">Нет напоминаний</h4>
             <p class="mb-3">Создайте первое напоминание о ТО или замене жидкостей</p>
-            <a href="{{ route('reminders.create') }}" class="btn btn-outline-makk">Создать напоминание</a>
+            <a href="{{ route('reminders.create') }}" class="btn btn-outline-app">Создать напоминание</a>
         </div>
     </div>
 @else
     <div class="accordion" id="remindersAccordion">
         @php
             $groupsConfig = [
-                'oil'         => ['label' => 'Замена масла', 'badge' => 'badge-makk badge-makk-warning'],
-                'coolant'     => ['label' => 'Антифриз', 'badge' => 'badge-makk badge-makk-info'],
-                'brake_fluid' => ['label' => 'Тормозная жидкость', 'badge' => 'badge-makk badge-makk-danger'],
-                'tires'       => ['label' => 'Шины', 'badge' => 'badge-makk badge-makk-secondary'],
-                'inspection'  => ['label' => 'Техосмотр', 'badge' => 'badge-makk badge-makk-primary'],
-                'custom'      => ['label' => 'Прочее', 'badge' => 'badge-makk badge-makk-secondary'],
-                'done'        => ['label' => 'Выполненные', 'badge' => 'badge-makk badge-makk-secondary'],
+                'oil'         => ['label' => 'Замена масла', 'badge' => 'badge-app badge-app-warning'],
+                'coolant'     => ['label' => 'Антифриз', 'badge' => 'badge-app badge-app-info'],
+                'brake_fluid' => ['label' => 'Тормозная жидкость', 'badge' => 'badge-app badge-app-danger'],
+                'tires'       => ['label' => 'Шины', 'badge' => 'badge-app badge-app-secondary'],
+                'inspection'  => ['label' => 'Техосмотр', 'badge' => 'badge-app badge-app-primary'],
+                'custom'      => ['label' => 'Прочее', 'badge' => 'badge-app badge-app-secondary'],
+                'done'        => ['label' => 'Выполненные', 'badge' => 'badge-app badge-app-secondary'],
             ];
         @endphp
 
         @foreach($groupsConfig as $key => $config)
             @if($groups[$key]->isNotEmpty())
-            <div class="accordion-item card-makk mb-3 border-0">
+            <div class="accordion-item card-app mb-3 border-0">
                 <h2 class="accordion-header">
                     <button class="accordion-button {{ $key !== 'oil' ? 'collapsed' : '' }} fw-semibold" type="button" 
                             data-bs-toggle="collapse" data-bs-target="#collapse{{ $key }}">
@@ -40,7 +40,7 @@
                     </button>
                 </h2>
                 <div id="collapse{{ $key }}" class="accordion-collapse collapse {{ $key === 'oil' ? 'show' : '' }}" data-bs-parent="#remindersAccordion">
-                    <div class="accordion-body p-2" style="background: var(--makk-light);">
+                    <div class="accordion-body p-2" style="background: var(--app-light);">
                         
                         @foreach($groups[$key] as $rem)
                         <!-- Карточка напоминания -->
@@ -67,19 +67,19 @@
                                         @endif
                                     @endif
                                     
-                                    @if($rem->is_recurring) <span class="badge badge-makk badge-makk-warning ms-1">Повтор</span> @endif
+                                    @if($rem->is_recurring) <span class="badge badge-app badge-app-warning ms-1">Повтор</span> @endif
                                 </small>
                             </div>
                             <div class="d-flex gap-2">
                                 @if($rem->status === 'active')
                                     <form action="{{ route('reminders.done', $rem) }}" method="POST">
                                         @csrf @method('PATCH')
-                                        <button class="btn btn-sm btn-outline-makk" title="Отметить выполненным">✓</button>
+                                        <button class="btn btn-sm btn-outline-app" title="Отметить выполненным">✓</button>
                                     </form>
                                 @endif
                                 <form action="{{ route('reminders.destroy', $rem) }}" method="POST" onsubmit="return confirm('Удалить напоминание?')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-makk text-danger" title="Удалить">Удалить</button>
+                                    <button class="btn btn-sm btn-outline-app text-danger" title="Удалить">Удалить</button>
                                 </form>
                             </div>
                         </div>

@@ -3,10 +3,10 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Редактирование автомобиля</h4>
-    <a href="{{ route('cars.index') }}" class="btn btn-outline-makk">Назад к списку</a>
+    <a href="{{ route('cars.index') }}" class="btn btn-outline-app">Назад к списку</a>
 </div>
 
-<div class="card card-makk">
+<div class="card card-app">
     <div class="card-body">
         <form action="{{ route('cars.update', $car) }}" method="POST">
             @csrf
@@ -57,8 +57,8 @@
             </div>
 
             <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-makk">Сохранить изменения</button>
-                <a href="{{ route('cars.index') }}" class="btn btn-outline-makk">Отмена</a>
+                <button type="submit" class="btn btn-app">Сохранить изменения</button>
+                <a href="{{ route('cars.index') }}" class="btn btn-outline-app">Отмена</a>
             </div>
         </form>
     </div>

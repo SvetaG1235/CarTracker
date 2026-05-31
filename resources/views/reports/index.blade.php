@@ -3,11 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Отчёты</h4>
-    <a href="{{ route('reports.export', request()->all()) }}" class="btn btn-makk">Скачать CSV</a>
+    <a href="{{ route('reports.export', request()->all()) }}" class="btn btn-app">Скачать CSV</a>
 </div>
 
 <!-- Фильтры -->
-<div class="card card-makk mb-4">
+<div class="card card-app mb-4">
     <div class="card-header fw-bold">Параметры отчёта</div>
     <div class="card-body">
         <form method="GET" action="{{ route('reports') }}" class="row g-3">
@@ -46,9 +46,15 @@
                     <input type="date" name="date_from" class="form-control" value="{{ $dateFrom }}">
                     <span class="input-group-text">—</span>
                     <input type="date" name="date_to" class="form-control" value="{{ $dateTo }}">
-                    <button type="submit" class="btn btn-outline-makk">Применить</button>
+                    <button type="submit" class="btn btn-outline-app">Применить</button>
                 </div>
             </div>
+            <!-- Кнопка сброса фильтров -->
+<div class="mt-3">
+    <a href="{{ route('reports') }}" class="btn btn-outline-secondary btn-sm">
+        🔄 Сбросить фильтры
+    </a>
+</div>
         </form>
     </div>
 </div>
@@ -56,7 +62,7 @@
 <!-- KPI карточки -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card card-makk">
+        <div class="card card-app">
             <div class="card-body text-center">
                 <h6 class="text-muted mb-1">Всего потрачено</h6>
                 <h3 class="mb-0 fw-bold">{{ number_format($totalSum ?? 0, 0, '.', ' ') }} ₽</h3>
@@ -64,7 +70,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card card-makk">
+        <div class="card card-app">
             <div class="card-body text-center">
                 <h6 class="text-muted mb-1">Количество операций</h6>
                 <h3 class="mb-0 fw-bold">{{ $totalCount ?? 0 }}</h3>
@@ -72,7 +78,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card card-makk">
+        <div class="card card-app">
             <div class="card-body text-center">
                 <h6 class="text-muted mb-1">Средний чек</h6>
                 <h3 class="mb-0 fw-bold">
@@ -86,7 +92,7 @@
 <!-- Графики -->
 <div class="row g-4 mb-4">
     <div class="col-lg-7">
-        <div class="card card-makk">
+        <div class="card card-app">
             <div class="card-header fw-bold">Динамика расходов</div>
             <div class="card-body">
                 @if(empty($labels) || empty($totals))
@@ -98,7 +104,7 @@
         </div>
     </div>
     <div class="col-lg-5">
-        <div class="card card-makk">
+        <div class="card card-app">
             <div class="card-header fw-bold">Расходы по категориям</div>
             <div class="card-body">
                 @if(empty($pieLabels) || empty($pieValues))
@@ -112,10 +118,10 @@
 </div>
 
 <!-- Детализация -->
-<div class="card card-makk">
+<div class="card card-app">
     <div class="card-header fw-bold">Детализация по категориям</div>
     <div class="card-body p-0">
-        <table class="table table-makk mb-0">
+        <table class="table table-app mb-0">
             <thead>
                 <tr>
                     <th>Категория</th>

@@ -3,12 +3,12 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Автомобили</h4>
-    <a href="{{ route('cars.create') }}" class="btn btn-makk">Добавить автомобиль</a>
+    <a href="{{ route('cars.create') }}" class="btn btn-app">Добавить автомобиль</a>
 </div>
 
-<div class="card card-makk">
+<div class="card card-app">
     <div class="card-body p-0">
-        <table class="table table-makk table-hover mb-0">
+        <table class="table table-app table-hover mb-0">
             <thead>
                 <tr>
                     <th>Марка/Модель</th>
@@ -27,11 +27,11 @@
                     <td>{{ number_format($car->mileage ?? 0) }} км</td>
                     <td class="text-end" onclick="event.stopPropagation()">
                         <div class="btn-group" role="group">
-                            <a href="{{ route('cars.show', $car) }}" class="btn btn-sm btn-outline-makk">Просмотр</a>
-                            <a href="{{ route('cars.edit', $car) }}" class="btn btn-sm btn-outline-makk">Изменить</a>
+                            <a href="{{ route('cars.show', $car) }}" class="btn btn-sm btn-outline-app">Просмотр</a>
+                            <a href="{{ route('cars.edit', $car) }}" class="btn btn-sm btn-outline-app">Изменить</a>
                             <form action="{{ route('cars.destroy', $car) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить автомобиль?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-makk text-danger">Удалить</button>
+                                <button type="submit" class="btn btn-sm btn-outline-app text-danger">Удалить</button>
                             </form>
                         </div>
                     </td>

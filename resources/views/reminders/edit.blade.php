@@ -3,10 +3,10 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Редактирование напоминания</h4>
-    <a href="{{ route('reminders.index') }}" class="btn btn-outline-makk">Назад к списку</a>
+    <a href="{{ route('reminders.index') }}" class="btn btn-outline-app">Назад к списку</a>
 </div>
 
-<form action="{{ route('reminders.update', $reminder) }}" method="POST" class="card card-makk p-4">
+<form action="{{ route('reminders.update', $reminder) }}" method="POST" class="card card-app p-4">
     @csrf
     @method('PUT')
     <input type="hidden" name="redirect_back" value="1">
@@ -39,7 +39,7 @@
                         <option value="{{ $key }}" {{ old('type', $reminder->type) == $key ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <button class="btn btn-outline-makk" type="button" data-bs-toggle="modal" data-bs-target="#infoModal">
+                <button class="btn btn-outline-app" type="button" data-bs-toggle="modal" data-bs-target="#infoModal">
                     ℹ️
                 </button>
             </div>
@@ -58,7 +58,7 @@
                         <!-- Контент подгрузится через JS -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-makk" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-outline-app" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
         </div>
 
         <!-- Блок пробега -->
-        <div class="col-12 mt-3 p-3 rounded border" id="mileageBlock" style="display: none; background: var(--makk-light);">
+        <div class="col-12 mt-3 p-3 rounded border" id="mileageBlock" style="display: none; background: var(--app-light);">
             <h6 class="mb-2 fw-bold">Напоминание по пробегу</h6>
             <input type="hidden" name="is_mileage_based" value="0">
             <div class="form-check form-switch">
@@ -114,8 +114,8 @@
     </div>
 
     <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-makk">Сохранить изменения</button>
-        <a href="{{ route('reminders.index') }}" class="btn btn-outline-makk">Отмена</a>
+        <button type="submit" class="btn btn-app">Сохранить изменения</button>
+        <a href="{{ route('reminders.index') }}" class="btn btn-outline-app">Отмена</a>
     </div>
 </form>
 

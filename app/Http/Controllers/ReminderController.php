@@ -72,25 +72,37 @@ public function markDone(Reminder $reminder)
 
     // 🔁 Если повторяющееся → генерируем следующее
     if ($reminder->is_recurring) {
+        // 📅 Берём дату СТАРОГО напоминания как точку отсчёта
+        $baseDate = \Carbon\Carbon::parse($reminder->due_date);
+        
         $newDue = match($reminder->type) {
-            'oil'         => now()->addMonths(6),
-            'coolant'     => now()->addMonths(12),
-            'brake_fluid' => now()->addMonths(24),
-            'tires'       => now()->addMonths(6),
-            'inspection'  => now()->addYear(),
-            'custom'      => now()->addMonths(3),
+            'oil'         => $baseDate->copy()->addMonths(6),
+            'coolant'     => $baseDate->copy()->addMonths(12),
+            'brake_fluid' => $baseDate->copy()->addMonths(24),
+            'tires'       => $baseDate->copy()->addMonths(6),
+            'inspection'  => $baseDate->copy()->addYear(),
+            'custom'      => $baseDate->copy()->addMonths(3),
+            default       => $baseDate->copy()->addMonths(3),
         };
 
-        // Создаём копию с новым сроком
+        // 🚗 Если напоминание привязано к пробегу — считаем следующий порог
+        $nextMileage = null;
+        if ($reminder->is_mileage_based && $reminder->car_id && $reminder->mileage_interval) {
+            $car = \App\Models\Car::find($reminder->car_id);
+            $nextMileage = ($car?->mileage ?? 0) + $reminder->mileage_interval;
+        }
+
+        // 🆕 Создаём копию с новым сроком (и сохраняем настройки пробега!)
         $reminder->replicate()->fill([
-            'status'       => 'active',
-            'due_date'     => $newDue,
-            'is_mileage_based' => false, // сбрасываем пробеговую привязку для нового цикла
-            'next_mileage_due' => null,
+            'status'           => 'active',
+            'due_date'         => $newDue,
+            'is_mileage_based' => $reminder->is_mileage_based, // ← сохраняем галочку!
+            'mileage_interval' => $reminder->mileage_interval,  // ← сохраняем интервал!
+            'next_mileage_due' => $nextMileage,                 // ← новая цель по пробегу
         ])->save();
     }
 
-    return back()->with('success', 'Отмечено как выполненное. Новое напоминание создано.');
+    return back()->with('success', '✅ Выполнено! Следующее напоминание: ' . $newDue->format('d.m.Y'));
 }
 
     public function destroy(Reminder $reminder)

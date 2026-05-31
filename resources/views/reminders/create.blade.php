@@ -3,10 +3,10 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Создать напоминание</h4>
-    <a href="{{ route('reminders.index') }}" class="btn btn-outline-makk">Назад к списку</a>
+    <a href="{{ route('reminders.index') }}" class="btn btn-outline-app">Назад к списку</a>
 </div>
 
-<form action="{{ route('reminders.store') }}" method="POST" class="card card-makk p-4">
+<form action="{{ route('reminders.store') }}" method="POST" class="card card-app p-4">
     @csrf
     <input type="hidden" name="redirect_back" value="1">
 
@@ -38,30 +38,14 @@
                         <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <button class="btn btn-outline-makk" type="button" data-bs-toggle="modal" data-bs-target="#infoModal">
+                <button class="btn btn-outline-app" type="button" data-bs-toggle="modal" data-bs-target="#infoModal">
                     ℹ️
                 </button>
             </div>
             @error('type')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
-        <!-- Модальное окно с подсказкой -->
-        <div class="modal fade" id="infoModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="infoTitle">ℹ️ Информация</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" id="infoContent">
-                        <!-- Контент подгрузится через JS -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-makk" data-bs-dismiss="modal">Закрыть</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
 
         <div class="col-md-6">
             <label for="title" class="form-label">Заголовок *</label>
@@ -88,7 +72,7 @@
         </div>
 
         <!-- Блок пробега -->
-        <div class="col-12 mt-3 p-3 rounded border" id="mileageBlock" style="display: none; background: var(--makk-light);">
+        <div class="col-12 mt-3 p-3 rounded border" id="mileageBlock" style="display: none; background: var(--app-light);">
             <h6 class="mb-2 fw-bold">Напоминание по пробегу</h6>
             <input type="hidden" name="is_mileage_based" value="0">
             <div class="form-check form-switch">
@@ -113,53 +97,82 @@
     </div>
 
     <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-makk">Создать напоминание</button>
-        <a href="{{ route('reminders.index') }}" class="btn btn-outline-makk">Отмена</a>
+        <button type="submit" class="btn btn-app">Создать напоминание</button>
+        <a href="{{ route('reminders.index') }}" class="btn btn-outline-app">Отмена</a>
     </div>
-</form>
+</form> <!-- 👈 Закрываем форму ЗДЕСЬ, до модалки -->
 
-<script>
-// Динамическая подгрузка информации при смене типа
-document.getElementById('reminderType')?.addEventListener('change', function() {
-    updateInfoModal(this.value);
-});
-
-// Инициализация при загрузке
-updateInfoModal(document.getElementById('reminderType')?.value);
-
-function updateInfoModal(type) {
-    const info = @json(\App\Helpers\MaintenanceInfo::getTypes());
-    const data = info[type];
-    if (!data) return;
-
-    const content = document.getElementById('infoContent');
-    document.getElementById('infoTitle').textContent = data.name;
-    
-    content.innerHTML = `
-        <div class="mb-3">
-            <h6 class="fw-bold text-primary">Когда менять:</h6>
-            <p class="mb-0">${data.when}</p>
+<!-- ✅ Модальное окно с подсказкой (вынесено после формы) -->
+<div class="modal fade" id="infoModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoTitle">ℹ️ Информация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @php
+                    $typesInfo = \App\Helpers\MaintenanceInfo::getTypes();
+                @endphp
+                
+                @foreach($typesInfo as $key => $data)
+                    <div class="info-tab" data-type="{{ $key }}" style="display: none;">
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-primary">Когда менять:</h6>
+                            <p class="mb-0">{{ $data['when'] }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-success">Зачем:</h6>
+                            <p>{{ $data['why'] }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-danger">Если не менять:</h6>
+                            <p>{{ $data['consequences'] }}</p>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold">Советы:</h6>
+                            <ul class="mb-0">
+                                @foreach($data['tips'] as $tip)
+                                    <li>{{ $tip }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-app" data-bs-dismiss="modal">Закрыть</button>
+            </div>
         </div>
-        <div class="mb-3">
-            <h6 class="fw-bold text-success">Зачем:</h6>
-            <p>${data.why}</p>
-        </div>
-        <div class="mb-3">
-            <h6 class="fw-bold text-danger">Если не менять:</h6>
-            <p>${data.consequences}</p>
-        </div>
-        <div>
-            <h6 class="fw-bold">Советы:</h6>
-            <ul class="mb-0">
-                ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
-            </ul>
-        </div>
-    `;
-}
-</script>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('reminderType');
+    const modalTabs = document.querySelectorAll('.info-tab');
+    
+    // Функция показа нужного блока
+    function showInfoTab(type) {
+        modalTabs.forEach(tab => {
+            tab.style.display = (tab.dataset.type === type) ? 'block' : 'none';
+        });
+    }
+    
+    // При изменении селекта — показываем нужный блок
+    select?.addEventListener('change', function() {
+        showInfoTab(this.value);
+    });
+    
+    // При открытии модалки — показываем актуальный блок
+    document.getElementById('infoModal')?.addEventListener('show.bs.modal', function() {
+        showInfoTab(select?.value);
+    });
+    
+    // Инициализация при загрузке
+    showInfoTab(select?.value);
+    
+    // 🧹 UI для блока пробега (твой старый код)
     const carSelect = document.querySelector('select[name="car_id"]');
     const mileageBlock = document.getElementById('mileageBlock');
     const mileageToggle = document.getElementById('mileageToggle');

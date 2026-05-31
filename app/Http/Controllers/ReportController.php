@@ -33,13 +33,33 @@ class ReportController extends Controller
         }
 
         // Группировка для графика
-        $groupBy = $period === 'week' ? '%Y-%u' : ($period === 'year' ? '%Y' : '%Y-%m');
+        $mysqlFormat = $period === 'week' ? '%Y-%u' : ($period === 'year' ? '%Y' : '%Y-%m');
         
-        $chartData = $query->clone()
-            ->selectRaw("DATE_FORMAT(date, '$groupBy') as period, SUM(amount) as total")
-            ->groupBy('period')
-            ->orderBy('period')
-            ->get();
+        // 🔧 Определяем драйвер БД для совместимости
+        $dbDriver = DB::getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        
+        if ($dbDriver === 'pgsql') {
+            // PostgreSQL: используем TO_CHAR вместо DATE_FORMAT
+            // Конвертируем форматы MySQL → PostgreSQL
+            $pgFormat = str_replace(
+                ['%Y-%m-%d', '%Y-%m', '%Y-%u', '%Y', '%m', '%d'],
+                ['YYYY-MM-DD', 'YYYY-MM', 'YYYY-WW', 'YYYY', 'MM', 'DD'],
+                $mysqlFormat
+            );
+            
+            $chartData = $query->clone()
+                ->selectRaw("TO_CHAR(date, '$pgFormat') as period, SUM(amount) as total")
+                ->groupBy('period')
+                ->orderBy('period')
+                ->get();
+        } else {
+            // MySQL и другие: оставляем DATE_FORMAT
+            $chartData = $query->clone()
+                ->selectRaw("DATE_FORMAT(date, '$mysqlFormat') as period, SUM(amount) as total")
+                ->groupBy('period')
+                ->orderBy('period')
+                ->get();
+        }
 
         // Статистика
         $totalSum = $query->clone()->sum('amount') ?? 0;
@@ -56,8 +76,7 @@ class ReportController extends Controller
         $pieLabels = $byCategory->pluck('category')->toArray();
         $pieValues = $byCategory->pluck('total')->map(fn($v) => (float)$v)->toArray();
 
-        // ✅ Списки для фильтров — ИСПРАВЛЕНО
-        // get() + mapWithKeys даёт полный контроль над форматом
+        // ✅ Списки для фильтров
         $cars = Car::where('user_id', $userId)
             ->get()
             ->mapWithKeys(fn($car) => [$car->id => "$car->brand $car->model"]);

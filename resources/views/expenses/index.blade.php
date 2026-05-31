@@ -3,12 +3,12 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Расходы</h4>
-    <a href="{{ route('expenses.create') }}" class="btn btn-makk">Внести расход</a>
+    <a href="{{ route('expenses.create') }}" class="btn btn-app">Внести расход</a>
 </div>
 
-<div class="card card-makk">
+<div class="card card-app">
     <div class="card-body p-0">
-        <table class="table table-makk table-hover mb-0">
+        <table class="table table-app table-hover mb-0">
             <thead>
                 <tr>
                     <th>Дата</th>
@@ -35,17 +35,17 @@
                     <td>{{ $exp->date?->format('d.m.Y') }}</td>
                     <td>{{ $exp->car?->brand }} {{ $exp->car?->model }}</td>
                     <td>
-                        <span class="badge badge-makk badge-makk-secondary text-uppercase">
+                        <span class="badge badge-app badge-app-secondary text-uppercase">
                             {{ $catMap[$exp->category] ?? $exp->category }}
                         </span>
                     </td>
                     <td>{{ Str::limit($exp->description, 40) }}</td>
                     <td class="text-end fw-bold">{{ number_format($exp->amount, 2, '.', ' ') }} ₽</td>
                     <td class="text-end">
-                        <a href="{{ route('expenses.edit', $exp) }}" class="btn btn-sm btn-outline-makk">Изменить</a>
+                        <a href="{{ route('expenses.edit', $exp) }}" class="btn btn-sm btn-outline-app">Изменить</a>
                         <form action="{{ route('expenses.destroy', $exp) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить запись о расходе?')">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-makk text-danger">Удалить</button>
+                            <button type="submit" class="btn btn-sm btn-outline-app text-danger">Удалить</button>
                         </form>
                     </td>
                 </tr>

@@ -11,23 +11,29 @@ use Illuminate\Support\Facades\Log;
 
 class CarRelatedController extends Controller
 {
-    // 🔹 Водители
-    public function storeDriver(Request $r)
-    {
-        $r->validate([
-            'car_id'         => 'required|exists:cars,id',
-            'full_name'      => 'required|string|max:100',
-            'license_number' => 'nullable|string|max:50',
-            'phone'          => 'nullable|string|max:20',
-            'is_primary'     => 'boolean'
-        ]);
+   // 🔹 Водители
+public function storeDriver(Request $r)
+{
+    $r->validate([
+        'car_id'         => 'required|exists:cars,id',
+        'full_name'      => 'required|string|max:100',
+        'license_number' => 'nullable|string|max:50',
+        'phone'          => 'nullable|string|max:20',
+        'is_primary'     => 'boolean'
+    ]);
 
-        $data = $r->only(['car_id', 'full_name', 'license_number', 'phone']);
-        $data['is_primary'] = $r->boolean('is_primary');
+    $data = $r->only(['car_id', 'full_name', 'license_number', 'phone']);
+    $data['is_primary'] = $r->boolean('is_primary');
 
-        Driver::create($data);
-        return back()->with('success', 'Водитель добавлен');
+    // 🎯 Если этот водитель основной — сбрасываем старого
+    if ($data['is_primary']) {
+        Driver::where('car_id', $data['car_id'])
+              ->update(['is_primary' => false]);
     }
+
+    Driver::create($data);
+    return back()->with('success', 'Водитель добавлен');
+}
 
     public function destroyDriver(Driver $driver)
     {

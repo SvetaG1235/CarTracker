@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Artisan;
 
 // 🌐 Гостевая страница
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return redirect()->route('dashboard'); // или твой маршрут дашборда
+    }
+    return redirect()->route('register');
 });
 
 Route::get('/run-migrations', function () {
