@@ -2,20 +2,16 @@
 <html lang="ru">
 
 <head>
-<!-- ЗАКОММЕНТИРУЙ ЭТО ВРЕМЕННО: 
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0d6efd">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="CarTracker">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">-->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'CarTracker') }}</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ asset('css/auto-style.css') }}" rel="stylesheet">
+    
+    <!-- Твои стили (принудительно HTTPS) -->
+    <link href="https://cartracker-aldh.onrender.com/css/auto-style.css" rel="stylesheet">
 
     <!-- Шрифт Open Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +25,7 @@
        <nav class="navbar navbar-app sticky-top">
     <div class="container-fluid">
 <a class="navbar-brand" href="{{ route('dashboard') }}">
-    <img src="{{ asset('images/logo.png') }}" alt="Cartracker" class="navbar-logo">
+    <img src="https://cartracker-aldh.onrender.com/images/logo.png" alt="Cartracker" class="navbar-logo">
     <div class="brand-content">
         <span class="brand-title">CarTracker</span>
         <span class="brand-subtitle">Расходы и напоминания</span>
@@ -170,7 +166,7 @@
         <nav class="navbar navbar-app">
             <div class="container">
 <a class="navbar-brand" href="/">
-    <img src="{{ asset('images/logo.png') }}" alt="Cartracker" class="navbar-logo">
+    <img src="https://cartracker-aldh.onrender.com/images/logo.png" alt="Cartracker" class="navbar-logo">
     CarTracker
 </a>
                 <div class="d-flex gap-2">
@@ -185,18 +181,9 @@
         </main>
     @endauth
 
+    <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
-<!--
-    <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW registered'))
-        .catch(err => console.warn('SW error', err));
-    });
-  }
-</script>-->
 </body>
 
 </html>
