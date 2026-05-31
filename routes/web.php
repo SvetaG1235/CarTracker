@@ -41,8 +41,8 @@ Route::get('/run-migrations', function () {
 
 // 🖥️ Дашборд
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', ])->name('dashboard');
+    return '✅ DASHBOARD WORKS! User: ' . (auth()->check() ? auth()->user()->name : 'Guest');
+})->middleware(['auth'])->name('dashboard');
 
 // 👤 Профиль
 Route::middleware('auth')->group(function () {
