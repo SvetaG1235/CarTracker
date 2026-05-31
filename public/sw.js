@@ -1,11 +1,7 @@
-const CACHE_NAME = 'cartracker-v1';
+const CACHE_NAME = 'cartracker-v2'; // ← Увеличил версию, чтобы сбросить старый кэш
 
-// ✅ Используем ОТНОСИТЕЛЬНЫЕ пути (без http://)
-const urlsToCache = [
-  '/',
-  '/dashboard',
-  '/login',
-  '/register',
+// Кэшируем ТОЛЬКО статику (не страницы!)
+const STATIC_ASSETS = [
   '/css/auto-style.css',
   '/images/logo.png',
   '/images/icon-192.png',
@@ -16,45 +12,43 @@ const urlsToCache = [
   'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap'
 ];
 
-// Установка Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('✅ Cache opened');
-        return cache.addAll(urlsToCache);
-      })
-      .catch(err => {
-        console.warn('❌ Cache failed:', err);
-      })
+      .then(cache => cache.addAll(STATIC_ASSETS))
+      .catch(err => console.warn('Cache init failed:', err))
   );
 });
 
-// Активация и очистка старого кэша
 self.addEventListener('activate', event => {
+  // Удаляем старые кэши с другим именем
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then(names => 
+      Promise.all(
+        names.filter(name => name !== CACHE_NAME)
+             .map(name => caches.delete(name))
+      )
+    )
   );
 });
 
-// Перехват запросов
+// Стратегия: "Сначала сеть, потом кэш" (для HTML), "Сначала кэш" (для статики)
 self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // HTML-страницы: всегда идём на сервер, кэш — только если офлайн
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Статика: сначала кэш, потом сеть
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+    caches.match(request)
+      .then(cached => cached || fetch(request))
   );
 });
