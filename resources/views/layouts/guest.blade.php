@@ -7,7 +7,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __('Авторизация') }} — {{ config('app.name', 'CarTracker') }}</title>
     
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Отключаем Vite --}}
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Твои стили (принудительно HTTPS) -->
+    <link href="https://cartracker-aldh.onrender.com/css/auto-style.css" rel="stylesheet">
     
     <style>
         :root {
@@ -62,7 +69,7 @@
             color: var(--primary-800); 
         }
         
-        /* Стили для форм (совместимость с Bootstrap + твой дизайн) */
+        /* Стили для форм */
         .auth-card .form-label {
             font-weight: 600;
             color: var(--gray-700);
@@ -117,15 +124,17 @@
 <body class="auth-bg">
     <div class="card auth-card p-4 p-md-5">
         <div class="text-center">
-            <a href="/" class="auth-brand">
-                <img src="{{ asset('images/logo.png') }}" alt="Cartracker" style="height: 36px;"> 
-                 {{ config('app.name', 'CarTracker') }}
+            <a href="https://cartracker-aldh.onrender.com/" class="auth-brand">
+                <!-- Логотип принудительно HTTPS -->
+                <img src="https://cartracker-aldh.onrender.com/images/logo.png" alt="Cartracker" style="height: 36px;"> 
+                {{ config('app.name', 'CarTracker') }}
             </a>
         </div>
         
         {{ $slot }}
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
