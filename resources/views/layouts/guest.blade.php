@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __('Авторизация') }} — {{ config('app.name', 'CarTracker') }}</title>
-    
+            <!-- PWA -->
+<link rel="manifest" href="https://cartracker-aldh.onrender.com/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CarTracker">
+
     {{-- Отключаем Vite --}}
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     
@@ -136,5 +142,15 @@
     
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+  // Регистрация Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+navigator.serviceWorker.register('https://cartracker-aldh.onrender.com/sw.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.warn('SW error:', err));
+    });
+  }
+</script>
 </body>
 </html>

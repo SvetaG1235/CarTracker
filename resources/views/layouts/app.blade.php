@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'CarTracker') }}</title>
         <!-- PWA -->
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
+<link rel="manifest" href="https://cartracker-aldh.onrender.com/manifest.json">
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -194,7 +194,7 @@
   // Регистрация Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
+navigator.serviceWorker.register('https://cartracker-aldh.onrender.com/sw.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => console.warn('SW error:', err));
     });
