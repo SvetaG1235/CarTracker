@@ -28,15 +28,12 @@
     @endforeach
 </select>
 
-<!-- СТАЛО: -->
+<!-- Правильный вариант для mapWithKeys: -->
 <select name="car_id" class="form-select form-select-sm" onchange="this.form.submit()">
     <option value="">Все автомобили</option>
-    @foreach($cars as $car)
-        <option value="{{ $car->id }}" {{ $carId == $car->id ? 'selected' : '' }}>
-            {{ $car->brand }} {{ $car->model }} 
-            @if($car->plate) 
-                • <strong>{{ strtoupper($car->plate) }}</strong>
-            @endif
+    @foreach($cars as $id => $name)
+        <option value="{{ $id }}" {{ $carId == $id ? 'selected' : '' }}>
+            {{ $name }}  ← $name уже содержит "Марка Модель • НОМЕР"
         </option>
     @endforeach
 </select>
