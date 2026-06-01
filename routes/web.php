@@ -119,7 +119,34 @@ Route::get('/files/{path}', function ($path) {
 ->middleware('auth')
 ->name('files.show');
 
-
+// 🔧 DEBUG: показать загруженные файлы
+Route::get('/debug/uploads', function () {
+    if (!auth()->check()) abort(403);
+    
+    $base = storage_path('app/uploads');
+    $files = [];
+    
+    if (is_dir($base)) {
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($base)) as $file) {
+            if ($file->isFile()) {
+                $relativePath = str_replace(storage_path('app/'), '', $file->getPathname());
+                $files[] = [
+                    'path' => $relativePath,
+                    'size' => $file->getSize(),
+                    'url' => route('files.show', ['path' => $relativePath])
+                ];
+            }
+        }
+    }
+    
+    $output = '<h3>📁 Загруженные файлы в storage/app/uploads/</h3>';
+    $output .= '<p>Base path: <code>' . $base . '</code></p>';
+    $output .= '<p>Exists: ' . (is_dir($base) ? '✅ YES' : '❌ NO') . '</p>';
+    $output .= '<p>Writable: ' . (is_writable($base) ? '✅ YES' : '❌ NO') . '</p>';
+    $output .= '<hr><pre>' . print_r($files, true) . '</pre>';
+    
+    return $output;
+})->middleware('auth');
 // =====================================================
 // 🔧 DEMO: Запуск сидеров (ТОЛЬКО ДЛЯ РАЗРАБОТКИ!)
 // =====================================================
