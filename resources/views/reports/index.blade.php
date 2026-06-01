@@ -21,19 +21,14 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label small text-muted">Автомобиль</label>
-<select name="car_id" class="form-select form-select-sm" onchange="this.form.submit()">
-    <option value="">Все автомобили</option>
-    @foreach($cars as $id => $name)
-        <option value="{{ $id }}" {{ $carId == $id ? 'selected' : '' }}>{{ $name }}</option>
-    @endforeach
-</select>
+
 
 <!-- Правильный вариант для mapWithKeys: -->
 <select name="car_id" class="form-select form-select-sm" onchange="this.form.submit()">
     <option value="">Все автомобили</option>
     @foreach($cars as $id => $name)
         <option value="{{ $id }}" {{ $carId == $id ? 'selected' : '' }}>
-            {{ $name }}  ← $name уже содержит "Марка Модель • НОМЕР"
+     
         </option>
     @endforeach
 </select>
