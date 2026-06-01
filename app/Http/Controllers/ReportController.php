@@ -77,9 +77,15 @@ class ReportController extends Controller
         $pieValues = $byCategory->pluck('total')->map(fn($v) => (float)$v)->toArray();
 
         // ✅ Списки для фильтров
-        $cars = Car::where('user_id', $userId)
-            ->get()
-            ->mapWithKeys(fn($car) => [$car->id => "$car->brand $car->model"]);
+$cars = Car::where('user_id', $userId)
+    ->orderBy('brand')
+    ->orderBy('model')
+    ->orderBy('plate')
+    ->get()
+    ->mapWithKeys(fn($car) => [
+        $car->id => "$car->brand $car->model" . 
+                   ($car->plate ? " • " . strtoupper($car->plate) : "")
+    ]);
             
         $categories = [
             'fuel' => '⛽ Топливо',
