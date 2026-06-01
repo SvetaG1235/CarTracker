@@ -9,12 +9,32 @@ use Illuminate\Support\Facades\Storage;
 
 class PhotoController extends Controller
 {
-    public function index()
-    {
-        $photos = Photo::with('car')->latest()->paginate(12);
-        $cars = Car::where('user_id', auth()->id())->get();
-        return view('photos.index', compact('photos', 'cars'));
+public function index()
+{
+    // Базовый запрос
+    $query = Photo::with('car');
+    
+    // 🔑 Фильтр по автомобилю, если выбран
+    if (request('car_id')) {
+        $query->where('car_id', request('car_id'));
     }
+    
+    // 🔐 Безопасность: только фото машин текущего пользователя
+    $query->whereHas('car', function($q) {
+        $q->where('user_id', auth()->id());
+    });
+    
+    $photos = $query->latest()->paginate(12);
+    
+    // Сортировка для удобства в фильтре
+    $cars = Car::where('user_id', auth()->id())
+        ->orderBy('brand')
+        ->orderBy('model')
+        ->orderBy('plate')
+        ->get();
+    
+    return view('photos.index', compact('photos', 'cars'));
+}
     
     public function create(Car $car)
     {

@@ -14,9 +14,12 @@
                 <select name="car_id" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Все автомобили</option>
                     @foreach($cars as $car)
-                        <option value="{{ $car->id }}" {{ request('car_id') == $car->id ? 'selected' : '' }}>
-                            {{ $car->make }} {{ $car->model }}
-                        </option>
+<option value="{{ $car->id }}" {{ request('car_id') == $car->id ? 'selected' : '' }}>
+    {{ $car->make }} {{ $car->model }} 
+    @if($car->plate) 
+        • <strong>{{ strtoupper($car->plate) }}</strong>
+    @endif
+</option>
                     @endforeach
                 </select>
             </div>
@@ -50,9 +53,12 @@
             </div>
             
             <div class="card-body">
-                <small class="text-muted">{{ $photo->car->make }} {{ $photo->model }}</small>
-                <p class="mb-1">{{ $photo->description ?? 'Без описания' }}</p>
-                <small class="badge bg-secondary">{{ $photo->category }}</small>
+<small class="text-muted">
+    {{ $photo->car->brand }} {{ $photo->car->model }}
+    @if($photo->car->plate)
+        <span class="badge badge-app-secondary ms-1">{{ strtoupper($photo->car->plate) }}</span>
+    @endif
+</small>
             </div>
         </div>
     </div>
