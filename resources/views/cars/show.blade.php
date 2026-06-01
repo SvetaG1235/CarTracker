@@ -18,6 +18,10 @@
 </ul>
 
 <div class="tab-content">
+
+<a href="{{ route('photos.create', $car) }}" class="btn btn-app">
+    📸 Добавить фото
+</a>
     <!-- Информация -->
     <div class="tab-pane fade show active" id="tab-info">
         <div class="row g-4">

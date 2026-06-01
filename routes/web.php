@@ -74,7 +74,14 @@ Route::middleware('auth')->group(function () {
     // 🔹 Сервисные карты
     Route::post('/service-cards', [CarRelatedController::class, 'storeServiceCard'])->name('service_cards.store');
     Route::delete('/service-cards/{service_card}', [CarRelatedController::class, 'destroyServiceCard'])->name('service_cards.destroy');
-});
+    
+
+    Route::get('/photos', [PhotoController::class, 'index'])->name('photos.index');
+    Route::get('/cars/{car}/photos/create', [PhotoController::class, 'create'])->name('photos.create');
+    Route::post('/photos', [PhotoController::class, 'store'])->name('photos.store');
+    Route::delete('/photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+
+    });
 
 // 🔐 АДМИН-ПАНЕЛЬ
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

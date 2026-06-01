@@ -30,6 +30,14 @@ public function store(StoreExpenseRequest $request)
     return $back->with('success', 'Расход записан');
 }
 
+    public function edit(Expense $expense)
+    {
+        if ($expense->user_id !== auth()->id()) abort(403, 'Нет прав доступа');
+
+        $cars = Car::where('user_id', auth()->id())->get();
+        return view('expenses.edit', compact('expense', 'cars'));
+    }
+
     public function destroy(Expense $expense)
     {
         if ($expense->user_id !== auth()->id()) abort(403);
