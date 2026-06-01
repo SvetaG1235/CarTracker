@@ -51,31 +51,36 @@ public function storeDriver(Request $r)
 
     // 🔹 Страховка
     public function storeInsurance(Request $r)
-    {
-        $data = $r->validate([
-            'car_id'        => 'required|exists:cars,id',
-            'type'          => 'required|in:osago,casco',
-            'policy_number' => 'required|string|max:50',
-            'company'       => 'required|string|max:100',
-            'start_date'    => 'required|date',
-            'end_date'      => 'required|date|after:start_date',
-            'cost'          => 'nullable|numeric|min:0',
-            'policy_file'   => 'nullable|file|mimes:pdf|max:10240',
-        ]);
+{
+    $data = $r->validate([
+        'car_id'        => 'required|exists:cars,id',
+        'type'          => 'required|in:osago,casco',
+        'policy_number' => 'required|string|max:50',
+        'company'       => 'required|string|max:100',
+        'start_date'    => 'required|date',
+        'end_date'      => 'required|date|after:start_date',
+        'cost'          => 'nullable|numeric|min:0',
+        'policy_file'   => 'nullable|file|mimes:pdf|max:10240',
+    ]);
 
-        // ✅ Исправлено: используем storage диск вместо public/
-        if ($r->hasFile('policy_file')) {
-            $file = $r->file('policy_file');
-            $filename = uniqid('ins_') . '.' . $file->getClientOriginalExtension();
-            
-            // Сохраняем в storage/app/uploads/insurance_policies/
-            $path = $file->storeAs('uploads/insurance_policies', $filename, 'local');
-            $data['policy_file'] = $path; // сохраняем относительный путь
-        }
-
-        Insurance::create($data);
-        return back()->with('success', 'Страховка добавлена');
+    // ✅ Создаём папку, если её нет
+    $uploadDir = storage_path('app/uploads/insurance_policies');
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
     }
+
+    if ($r->hasFile('policy_file')) {
+        $file = $r->file('policy_file');
+        $filename = uniqid('ins_') . '.' . $file->getClientOriginalExtension();
+        
+        // 🔑 Используем явный путь вместо storeAs
+        $file->move($uploadDir, $filename);
+        $data['policy_file'] = 'uploads/insurance_policies/' . $filename;
+    }
+
+    Insurance::create($data);
+    return back()->with('success', 'Страховка добавлена');
+}
 
     public function destroyInsurance(Insurance $insurance)
     {
@@ -99,31 +104,36 @@ public function storeDriver(Request $r)
 
     // 🔹 Сервисные карты
     public function storeServiceCard(Request $r)
-    {
-        $data = $r->validate([
-            'car_id'              => 'required|exists:cars,id',
-            'workshop_name'       => 'required|string|max:100',
-            'service_card_number' => 'nullable|string|max:50',
-            'barcode_image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'contact_phone'       => 'nullable|string|max:20',
-            'address'             => 'nullable|string|max:200',
-            'last_visit'          => 'nullable|date',
-            'notes'               => 'nullable|string',
-        ]);
+{
+    $data = $r->validate([
+        'car_id'              => 'required|exists:cars,id',
+        'workshop_name'       => 'required|string|max:100',
+        'service_card_number' => 'nullable|string|max:50',
+        'barcode_image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'contact_phone'       => 'nullable|string|max:20',
+        'address'             => 'nullable|string|max:200',
+        'last_visit'          => 'nullable|date',
+        'notes'               => 'nullable|string',
+    ]);
 
-        // ✅ Исправлено: используем storage диск
-        if ($r->hasFile('barcode_image')) {
-            $file = $r->file('barcode_image');
-            $filename = uniqid('sc_') . '.' . $file->getClientOriginalExtension();
-            
-            // Сохраняем в storage/app/uploads/service_cards/
-            $path = $file->storeAs('uploads/service_cards', $filename, 'local');
-            $data['barcode_image'] = $path;
-        }
-
-        ServiceCard::create($data);
-        return back()->with('success', 'Сервисная карта добавлена');
+    // ✅ Создаём папку, если её нет
+    $uploadDir = storage_path('app/uploads/service_cards');
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
     }
+
+    if ($r->hasFile('barcode_image')) {
+        $file = $r->file('barcode_image');
+        $filename = uniqid('sc_') . '.' . $file->getClientOriginalExtension();
+        
+        // 🔑 Используем явный путь вместо storeAs
+        $file->move($uploadDir, $filename);
+        $data['barcode_image'] = 'uploads/service_cards/' . $filename;
+    }
+
+    ServiceCard::create($data);
+    return back()->with('success', 'Сервисная карта добавлена');
+}
 
     public function destroyServiceCard(ServiceCard $service_card)
     {
