@@ -59,6 +59,10 @@
                        href="{{ route('cars.index') }}">Автомобили</a>
                 </li>
                 <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('photos.*') ? 'active' : '' }}" 
+       href="{{ route('photos.index') }}">📸 Галерея</a>
+</li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" 
                        href="{{ route('expenses.index') }}">Расходы</a>
                 </li>
@@ -105,6 +109,12 @@
                                 Автомобили
                             </a>
                         </li>
+                        <li class="nav-item">
+    <a href="{{ route('photos.index') }}"
+       class="nav-link {{ request()->routeIs('photos.*') ? 'active' : '' }}">
+        📸 Галерея
+    </a>
+</li>
                         <li class="nav-item">
                             <a href="{{ route('expenses.index') }}"
                                 class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">

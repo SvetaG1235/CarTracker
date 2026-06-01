@@ -38,6 +38,19 @@ public function store(StoreExpenseRequest $request)
         return view('expenses.edit', compact('expense', 'cars'));
     }
 
+    public function update(StoreExpenseRequest $request, Expense $expense)
+{
+    // Проверка прав
+    if ($expense->user_id !== auth()->id()) abort(403, 'Нет прав доступа');
+
+    // Обновляем запись
+    $expense->update($request->validated());
+    
+    // Редирект с сообщением
+    $back = $request->boolean('redirect_back') ? back() : redirect()->route('expenses.index');
+    return $back->with('success', 'Расход обновлён');
+}
+
     public function destroy(Expense $expense)
     {
         if ($expense->user_id !== auth()->id()) abort(403);
