@@ -806,32 +806,55 @@ a:hover {
     .card-app .card-body { padding: 0.75rem; }
 }
 
-/* 🔽 Уменьшаем стрелки пагинации и убираем текст */
-.pagination .page-link {
-    padding: 0.375rem 0.75rem !important;
-    font-size: 0.875rem !important;
-    line-height: 1.25 !important;
-}
+/* 🔽 ПАГИНАЦИЯ — ФИНАЛЬНЫЙ ФИКС */
 
-/* Скрываем текст "Previous" и "Next", оставляем только стрелки */
-.pagination .page-link span {
-    font-size: 1.2rem !important;
-}
-
-/* Убираем надписи Previous/Next, оставляем только символы */
-.pagination .page-link::before {
+/* Убираем текст "Previous/Next" полностью */
+.pagination .page-link span.visually-hidden,
+.pagination .page-link .sr-only,
+.pagination .page-link[aria-label]::after {
+    display: none !important;
     content: none !important;
 }
 
-/* Делаем стрелки компактными */
-.pagination-sm .page-link {
+/* Оставляем только стрелки, делаем их маленькими */
+.pagination .page-link {
     padding: 0.25rem 0.5rem !important;
-    font-size: 0.875rem !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    min-width: 28px !important;
+    text-align: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Центрируем стрелки */
-.pagination .page-link {
-    text-align: center !important;
-    min-width: 32px !important;
+/* Убираем любой текст внутри ссылок, оставляем только символы ‹ › */
+.pagination .page-link:not([aria-label]) {
+    font-size: 1.1rem !important;
 }
+
+/* Скрываем текстовые метки через атрибуты */
+.pagination [aria-label="Previous"]::before { content: "‹" !important; }
+.pagination [aria-label="Previous"] span { display: none !important; }
+.pagination [aria-label="Next"]::before { content: "›" !important; }
+.pagination [aria-label="Next"] span { display: none !important; }
+
+/* Компактные цифры страниц */
+.pagination .page-item:not(.disabled):not(.active) .page-link {
+    padding: 0.2rem 0.4rem !important;
+    font-size: 0.85rem !important;
+}
+
+/* Активная страница */
+.pagination .page-item.active .page-link {
+    background: var(--primary-600) !important;
+    border-color: var(--primary-600) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+/* Отключаем ховер-эффекты для стрелок */
+.pagination .page-item.disabled .page-link {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CarRelatedController;
