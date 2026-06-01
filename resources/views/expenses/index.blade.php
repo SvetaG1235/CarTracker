@@ -56,7 +56,7 @@
         </table>
     </div>
     @if($expenses->hasPages())
-    <div class="card-footer bg-white">{{ $expenses->links() }}</div>
+    <div class="card-footer bg-white">{{ $expenses->links('vendor.pagination.bootstrap-5') }}</div>
     @endif
 </div>
 @endsection
