@@ -45,7 +45,7 @@
         </table>
     </div>
     <div class="card-footer bg-white">
-        {{ auth()->user()->cars()->latest()->paginate(10)->links() }}
+       {{ $cars->links('vendor.pagination.bootstrap-5') }}
     </div>
 </div>
 @endsection

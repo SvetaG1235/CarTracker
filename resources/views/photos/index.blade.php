@@ -74,6 +74,6 @@
 
 <!-- Пагинация -->
 <div class="mt-4">
-    {{ $photos->links() }}
+{{ $photos->appends(request()->query())->links('vendor.pagination.bootstrap-5') }}
 </div>
 @endsection
