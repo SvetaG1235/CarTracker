@@ -805,4 +805,33 @@ a:hover {
     .table-app th, .table-app td { padding: 0.4rem 0.5rem; }
     .card-app .card-body { padding: 0.75rem; }
 }
+
+/* 🔽 Уменьшаем стрелки пагинации и убираем текст */
+.pagination .page-link {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.25 !important;
+}
+
+/* Скрываем текст "Previous" и "Next", оставляем только стрелки */
+.pagination .page-link span {
+    font-size: 1.2rem !important;
+}
+
+/* Убираем надписи Previous/Next, оставляем только символы */
+.pagination .page-link::before {
+    content: none !important;
+}
+
+/* Делаем стрелки компактными */
+.pagination-sm .page-link {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* Центрируем стрелки */
+.pagination .page-link {
+    text-align: center !important;
+    min-width: 32px !important;
+}
 }
