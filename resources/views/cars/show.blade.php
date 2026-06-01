@@ -21,10 +21,10 @@
 
 <div class="d-flex gap-2 mb-3">
     <a href="{{ route('photos.create', $car) }}" class="btn btn-app btn-sm">
-        📸 Добавить фото
+        Добавить фото
     </a>
     <a href="{{ route('photos.index', ['car_id' => $car->id]) }}" class="btn btn-outline-app btn-sm">
-        🖼️ Все фото этого авто
+        Все фото этого авто
     </a>
 </div>
     <!-- Информация -->
@@ -248,8 +248,6 @@
                         <div class="my-3 bg-light rounded p-2 d-inline-block">
 @if($sc->barcode_image)
     <img src="{{ route('files.show', ['path' => $sc->barcode_image]) }}" alt="Штрихкод" style="max-height: 80px;">
-
-                                <img src="{{ asset($sc->barcode_image) }}" class="img-fluid" style="max-height: 80px;" alt="Штрихкод">
                             @else
                                 <div class="text-muted small py-2">Штрихкод не загружен</div>
                             @endif
