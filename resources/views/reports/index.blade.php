@@ -169,19 +169,30 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Данные для графиков (безопасная передача через json_encode)
+    // Данные для графиков
     const barLabels = {!! json_encode($labels ?? []) !!};
     const barData = {!! json_encode($totals ?? []) !!};
     const pieLabels = {!! json_encode($pieLabels ?? []) !!};
     const pieValues = {!! json_encode($pieValues ?? []) !!};
     
-    // Общие настройки цветов в стиле МАКК
-    const makkColors = {
-        primary: '#2e2d2d',
-        accent: '#feed01',
-        gray: '#898989',
-        light: '#fbfcf9',
-        border: '#e1e1df'
+    // 🔑 Русские названия категорий
+    const categoryNames = {
+        'fuel': 'Топливо',
+        'wash': 'Мойка',
+        'repair': 'Ремонт',
+        'maintenance': 'ТО',
+        'insurance': 'Страховка',
+        'other': 'Прочее'
+    };
+    
+    // 🔑 Красивые цвета (гармонируют с синей темой)
+    const categoryColors = {
+        'fuel': '#f59e0b',         // Оранжевый
+        'wash': '#06b6d4',         // Бирюзовый
+        'repair': '#ef4444',       // Красный
+        'maintenance': '#1e40af',  // Тёмно-синий
+        'insurance': '#8b5cf6',    // Фиолетовый
+        'other': '#6b7280'         // Серый
     };
 
     // Столбчатый график (динамика)
@@ -194,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Расходы (₽)',
                     data: barData,
-                    backgroundColor: makkColors.primary,
+                    backgroundColor: '#2e2d2d',
                     borderRadius: 4,
                     borderSkipped: false
                 }]
@@ -220,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return value.toLocaleString('ru-RU') + ' ₽';
                             }
                         },
-                        grid: { color: makkColors.border }
+                        grid: { color: '#e1e1df' }
                     },
                     x: {
                         grid: { display: false }
@@ -230,24 +241,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Круговая диаграмма (доли категорий)
+    // 🔵 Круговая диаграмма (доли категорий)
     if(pieLabels.length > 0 && pieValues.length > 0) {
         const pieCtx = document.getElementById('pieChart').getContext('2d');
+        
+        // Преобразуем английские метки в русские и подбираем цвета
+        const translatedLabels = pieLabels.map(label => categoryNames[label] || label);
+        const colors = pieLabels.map(label => categoryColors[label] || '#6b7280');
+        
         new Chart(pieCtx, {
             type: 'doughnut',
             data: {
-                labels: pieLabels,
+                labels: translatedLabels,  // ← Русские названия!
                 datasets: [{
                     data: pieValues,
-                    backgroundColor: [
-                        makkColors.primary,
-                        makkColors.accent,
-                        makkColors.gray,
-                        '#4bc0c0',
-                        '#9966ff',
-                        '#ff9f40'
-                    ],
-                    borderWidth: 1,
+                    backgroundColor: colors,  // ← Красивые цвета!
+                    borderWidth: 2,
                     borderColor: '#fff'
                 }]
             },
@@ -258,8 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: { family: "'Open Sans', sans-serif", size: 11 },
-                            padding: 15
+                            font: { family: "'Open Sans', sans-serif", size: 12 },
+                            padding: 15,
+                            usePointStyle: true  // ← Точки вместо квадратиков
                         }
                     },
                     tooltip: {
