@@ -114,7 +114,10 @@ Route::get('/files/{path}', function ($path) {
         'Content-Type' => $mime,
         'Content-Disposition' => 'inline; filename="' . basename($realPath) . '"'
     ]);
-})->middleware('auth')->name('files.show');
+})
+->where('path', '.*')  // ← 🔑 ВОТ ЭТА СТРОЧКА ЧИНИТ ВСЁ!
+->middleware('auth')
+->name('files.show');
 
 
 // =====================================================
@@ -124,11 +127,6 @@ Route::get('/demo/seed', function () {
     // 🔒 Блокировка 1: Только для local или с флагом ALLOW_SEEDING
     if (!app()->environment('local') && env('ALLOW_SEEDING', false) !== true) {
         abort(403, 'Seeder route is disabled in production.');
-    }
-
-    // 🔒 Блокировка 2: Только для админов
-    if (auth()->check() && auth()->user()->role !== 'admin') {
-        abort(403, 'Доступ запрещён. Требуются права администратора.');
     }
 
     try {
