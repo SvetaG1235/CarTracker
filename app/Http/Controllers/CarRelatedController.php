@@ -8,6 +8,7 @@ use App\Models\Insurance;
 use App\Models\ServiceCard;
 use App\Models\Car;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class CarRelatedController extends Controller
 {
@@ -62,13 +63,14 @@ public function storeDriver(Request $r)
             'policy_file'   => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
-        $dir = public_path('uploads/insurance_policies');
-        if (!file_exists($dir)) mkdir($dir, 0755, true);
-
+        // ✅ Исправлено: используем storage диск вместо public/
         if ($r->hasFile('policy_file')) {
-            $filename = uniqid('ins_') . '.' . $r->file('policy_file')->getClientOriginalExtension();
-            $r->file('policy_file')->move($dir, $filename);
-            $data['policy_file'] = 'uploads/insurance_policies/' . $filename;
+            $file = $r->file('policy_file');
+            $filename = uniqid('ins_') . '.' . $file->getClientOriginalExtension();
+            
+            // Сохраняем в storage/app/uploads/insurance_policies/
+            $path = $file->storeAs('uploads/insurance_policies', $filename, 'local');
+            $data['policy_file'] = $path; // сохраняем относительный путь
         }
 
         Insurance::create($data);
@@ -84,8 +86,12 @@ public function storeDriver(Request $r)
             abort(403, 'Нет прав доступа');
         }
 
-        if ($insurance->policy_file && file_exists(public_path($insurance->policy_file))) {
-            unlink(public_path($insurance->policy_file));
+        // ✅ Исправлено: удаляем из storage/
+        if ($insurance->policy_file) {
+            $fullPath = storage_path('app/' . $insurance->policy_file);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
         }
         $insurance->delete();
         return back()->with('success', 'Страховка удалена');
@@ -105,13 +111,14 @@ public function storeDriver(Request $r)
             'notes'               => 'nullable|string',
         ]);
 
-        $dir = public_path('uploads/service_cards');
-        if (!file_exists($dir)) mkdir($dir, 0755, true);
-
+        // ✅ Исправлено: используем storage диск
         if ($r->hasFile('barcode_image')) {
-            $filename = uniqid('sc_') . '.' . $r->file('barcode_image')->getClientOriginalExtension();
-            $r->file('barcode_image')->move($dir, $filename);
-            $data['barcode_image'] = 'uploads/service_cards/' . $filename;
+            $file = $r->file('barcode_image');
+            $filename = uniqid('sc_') . '.' . $file->getClientOriginalExtension();
+            
+            // Сохраняем в storage/app/uploads/service_cards/
+            $path = $file->storeAs('uploads/service_cards', $filename, 'local');
+            $data['barcode_image'] = $path;
         }
 
         ServiceCard::create($data);
@@ -127,8 +134,12 @@ public function storeDriver(Request $r)
             abort(403, 'Нет прав доступа');
         }
 
-        if ($service_card->barcode_image && file_exists(public_path($service_card->barcode_image))) {
-            unlink(public_path($service_card->barcode_image));
+        // ✅ Исправлено: удаляем из storage/
+        if ($service_card->barcode_image) {
+            $fullPath = storage_path('app/' . $service_card->barcode_image);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
         }
         $service_card->delete();
         return back()->with('success', 'Карта удалена');

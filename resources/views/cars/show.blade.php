@@ -179,9 +179,11 @@
                         <h6 class="card-title fw-bold">{{ strtoupper($ins->type) }} — {{ $ins->company }}</h6>
                         <p class="mb-1 small"><strong>Полис:</strong> {{ $ins->policy_number }}</p>
                         <p class="mb-1 small"><strong>Действует до:</strong> {{ $ins->end_date?->format('d.m.Y') }}</p>
-                        @if($ins->policy_file)
-                            <a href="{{ asset($ins->policy_file) }}" target="_blank" class="btn btn-sm btn-outline-app w-100 mt-2">Скачать полис</a>
-                        @endif
+@if($ins->policy_file)
+    <a href="{{ route('files.show', ['path' => $ins->policy_file]) }}" target="_blank">
+        Скачать полис
+    </a>
+@endif
                         <form action="{{ route('insurances.destroy', $ins) }}" method="POST" class="d-inline mt-2" onsubmit="return confirm('Удалить полис?')">
                             @csrf @method('DELETE') <button class="btn btn-sm btn-outline-app text-danger">Удалить</button>
                         </form>
@@ -235,7 +237,9 @@
                             <span class="badge badge-app badge-app-secondary mb-2">№ {{ $sc->service_card_number }}</span>
                         @endif
                         <div class="my-3 bg-light rounded p-2 d-inline-block">
-                            @if($sc->barcode_image)
+@if($sc->barcode_image)
+    <img src="{{ route('files.show', ['path' => $sc->barcode_image]) }}" alt="Штрихкод" style="max-height: 80px;">
+
                                 <img src="{{ asset($sc->barcode_image) }}" class="img-fluid" style="max-height: 80px;" alt="Штрихкод">
                             @else
                                 <div class="text-muted small py-2">Штрихкод не загружен</div>

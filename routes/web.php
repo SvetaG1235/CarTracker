@@ -89,4 +89,64 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     })->name('admin.debug.reminders');
 });
 
+// =====================================================
+// 🔧 ЗАЩИЩЁННАЯ ОТДАЧА ЗАГРУЖЕННЫХ ФАЙЛОВ
+// =====================================================
+Route::get('/files/{path}', function ($path) {
+    // Только для авторизованных
+    if (!auth()->check()) abort(403);
+    
+    // Безопасно собираем путь
+    $fullPath = storage_path('app/' . $path);
+    
+    // Проверяем, что файл существует и внутри uploads/
+    $realPath = realpath($fullPath);
+    $base = realpath(storage_path('app/uploads'));
+    
+    if (!$realPath || !str_starts_with($realPath, $base) || !file_exists($realPath)) {
+        abort(404);
+    }
+    
+    // Определяем MIME-тип
+    $mime = mime_content_type($realPath) ?: 'application/octet-stream';
+    
+    return response()->file($realPath, [
+        'Content-Type' => $mime,
+        'Content-Disposition' => 'inline; filename="' . basename($realPath) . '"'
+    ]);
+})->middleware('auth')->name('files.show');
+
+
+// =====================================================
+// 🔧 DEMO: Запуск сидеров (ТОЛЬКО ДЛЯ РАЗРАБОТКИ!)
+// =====================================================
+Route::get('/demo/seed', function () {
+    // 🔒 Блокировка 1: Только для local или с флагом ALLOW_SEEDING
+    if (!app()->environment('local') && env('ALLOW_SEEDING', false) !== true) {
+        abort(403, 'Seeder route is disabled in production.');
+    }
+
+    // 🔒 Блокировка 2: Только для админов
+    if (auth()->check() && auth()->user()->role !== 'admin') {
+        abort(403, 'Доступ запрещён. Требуются права администратора.');
+    }
+
+    try {
+        $output = new \Symfony\Component\Console\Output\BufferedOutput();
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true], $output);
+        
+        return response()->json([
+            'success' => true, 
+            'message' => '✅ Сидеры выполнены!', 
+            'output' => $output->fetch()
+        ], 200);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false, 
+            'error' => $e->getMessage()
+        ], 500);
+    }
+})->name('demo.seed');
+
 require __DIR__.'/auth.php';
