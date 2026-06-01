@@ -19,14 +19,7 @@
 
 <div class="tab-content">
 
-<div class="d-flex gap-2 mb-3">
-    <a href="{{ route('photos.create', $car) }}" class="btn btn-app btn-sm">
-        Добавить фото
-    </a>
-    <a href="{{ route('photos.index', ['car_id' => $car->id]) }}" class="btn btn-outline-app btn-sm">
-        Все фото этого авто
-    </a>
-</div>
+
     <!-- Информация -->
     <div class="tab-pane fade show active" id="tab-info">
         <div class="row g-4">
@@ -40,6 +33,14 @@
                     </ul>
                 </div>
             </div>
+            <div class="d-flex gap-2 mb-3">
+    <a href="{{ route('photos.create', $car) }}" class="btn btn-app btn-sm">
+        Добавить фото
+    </a>
+    <a href="{{ route('photos.index', ['car_id' => $car->id]) }}" class="btn btn-outline-app btn-sm">
+        Все фото этого авто
+    </a>
+</div>
             <div class="col-md-8">
                 <div class="card card-app">
                     <div class="card-header">Статистика</div>
