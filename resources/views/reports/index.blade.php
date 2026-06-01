@@ -28,7 +28,7 @@
     <option value="">Все автомобили</option>
     @foreach($cars as $id => $name)
         <option value="{{ $id }}" {{ $carId == $id ? 'selected' : '' }}>
-     
+            {{ $name }}  
         </option>
     @endforeach
 </select>
