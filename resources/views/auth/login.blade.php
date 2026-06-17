@@ -1,4 +1,10 @@
 <x-guest-layout>
+    <!-- Заголовок страницы -->
+    <div class="text-center mb-4">
+        <h4 class="fw-bold mb-1">Вход</h4>
+       
+    </div>
+
     <!-- Session Status -->
     @if(session('status'))
         <div class="alert alert-success mb-4" role="alert">{{ session('status') }}</div>
@@ -28,22 +34,26 @@
             @enderror
         </div>
 
-        <!-- Remember Me -->
+        <!-- Remember Me (опционально, если есть) -->
+        <!--
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-            <label class="form-check-label" for="remember">Запомнить меня</label>
+            <input type="checkbox" class="form-check-input" id="remember_me" name="remember">
+            <label class="form-check-label" for="remember_me">Запомнить меня</label>
         </div>
+        -->
 
-        <!-- Actions -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            @if(Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-decoration-none small">
+        <!-- Forgot Password (опционально) -->
+        <!--
+        @if (Route::has('password.request'))
+            <div class="text-end mb-3">
+                <a class="text-decoration-none small" href="{{ route('password.request') }}">
                     Забыли пароль?
                 </a>
-            @endif
-        </div>
+            </div>
+        @endif
+        -->
 
-        <button type="submit" class="btn btn-primary w-100 mb-3">
+        <button type="submit" class="btn btn-app w-100 mb-3">
             Войти
         </button>
 

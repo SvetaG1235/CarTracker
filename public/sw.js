@@ -1,15 +1,14 @@
-const CACHE_NAME = 'cartracker-v2'; // ← Увеличил версию, чтобы сбросить старый кэш
+const CACHE_NAME = 'cartracker-v3'; // ← Новая версия для сброса кэша
 
-// Кэшируем ТОЛЬКО статику (не страницы!)
+// Кэшируем только статику + главную страницу как fallback
 const STATIC_ASSETS = [
+  '/',  // ← Главная страница (fallback для офлайна)
   '/css/auto-style.css',
   '/images/logo.png',
   '/images/icon-192.png',
   '/images/icon-512.png',
-  '/manifest.json',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
-  'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap'
+  '/manifest.json'
+  // CDN-ресурсы лучше убрать: они могут не закэшироваться из-за CORS
 ];
 
 self.addEventListener('install', event => {
@@ -18,10 +17,10 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(STATIC_ASSETS))
       .catch(err => console.warn('Cache init failed:', err))
   );
+  self.skipWaiting(); // ← Активировать новый SW сразу
 });
 
 self.addEventListener('activate', event => {
-  // Удаляем старые кэши с другим именем
   event.waitUntil(
     caches.keys().then(names => 
       Promise.all(
@@ -30,23 +29,22 @@ self.addEventListener('activate', event => {
       )
     )
   );
+  self.clients.claim(); // ← Взять контроль над страницами сразу
 });
 
-// Стратегия: "Сначала сеть, потом кэш" (для HTML), "Сначала кэш" (для статики)
 self.addEventListener('fetch', event => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // HTML-страницы: всегда идём на сервер, кэш — только если офлайн
+  // HTML-страницы: сеть → fallback на главную
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .catch(() => caches.match(request))
+        .catch(() => caches.match('/'))  // ← Fallback на закэшированную главную
     );
     return;
   }
 
-  // Статика: сначала кэш, потом сеть
+  // Статика: кэш → сеть
   event.respondWith(
     caches.match(request)
       .then(cached => cached || fetch(request))
