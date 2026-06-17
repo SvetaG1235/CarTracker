@@ -1,13 +1,12 @@
 <x-guest-layout>
-    <!-- Заголовок страницы -->
+
     <div class="text-center mb-4">
         <h4 class="fw-bold mb-1">Регистрация</h4>
         <p class="text-muted small">Создайте аккаунт для доступа к CarTracker</p>
     </div>
-
     <form method="POST" action="{{ route('register') }}">
         @csrf
-
+    
         <!-- Name -->
         <div class="mb-3">
             <label for="name" class="form-label">Имя</label>
@@ -51,7 +50,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-app w-100 mb-3">
+        <button type="submit" class="btn btn-primary w-100 mb-3">
             Зарегистрироваться
         </button>
 
