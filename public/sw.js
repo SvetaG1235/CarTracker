@@ -1,14 +1,15 @@
-const CACHE_NAME = 'cartracker-v3'; // ← Новая версия для сброса кэша
+const CACHE_NAME = 'cartracker-v5'; // ← Новая версия
 
-// Кэшируем только статику + главную страницу как fallback
+// Кэшируем ВСЕ необходимые страницы + статику
 const STATIC_ASSETS = [
-  '/',  // ← Главная страница (fallback для офлайна)
+  '/',
+  '/login',           // ← Добавляем страницу входа
+  '/register',        // ← Добавляем страницу регистрации
   '/css/auto-style.css',
   '/images/logo.png',
   '/images/icon-192.png',
   '/images/icon-512.png',
   '/manifest.json'
-  // CDN-ресурсы лучше убрать: они могут не закэшироваться из-за CORS
 ];
 
 self.addEventListener('install', event => {
@@ -17,7 +18,7 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(STATIC_ASSETS))
       .catch(err => console.warn('Cache init failed:', err))
   );
-  self.skipWaiting(); // ← Активировать новый SW сразу
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -29,17 +30,32 @@ self.addEventListener('activate', event => {
       )
     )
   );
-  self.clients.claim(); // ← Взять контроль над страницами сразу
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
   const { request } = event;
+  const url = new URL(request.url);
 
-  // HTML-страницы: сеть → fallback на главную
+  // HTML-страницы (навигация)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .catch(() => caches.match('/'))  // ← Fallback на закэшированную главную
+        .then(response => {
+          // Если успех — возвращаем ответ
+          return response;
+        })
+        .catch(() => {
+          // Если сеть недоступна — ищем в кэше
+          return caches.match(request)
+            .then(cached => {
+              // Если нашли в кэше — возвращаем
+              if (cached) return cached;
+              // Иначе пробуем главную или login
+              return caches.match('/')
+                .then(main => main || caches.match('/login'));
+            });
+        })
     );
     return;
   }
