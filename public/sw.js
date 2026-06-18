@@ -1,10 +1,10 @@
-const CACHE_NAME = 'cartracker-v5'; // ← Новая версия
+const CACHE_NAME = 'cartracker-v6'; // ← Новая версия
 
-// Кэшируем ВСЕ необходимые страницы + статику
+// Кэшируем публичные страницы + статику
 const STATIC_ASSETS = [
   '/',
-  '/login',           // ← Добавляем страницу входа
-  '/register',        // ← Добавляем страницу регистрации
+  '/login',
+  '/register',
   '/css/auto-style.css',
   '/images/logo.png',
   '/images/icon-192.png',
@@ -35,23 +35,27 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const { request } = event;
-  const url = new URL(request.url);
 
   // HTML-страницы (навигация)
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(request, { redirect: 'follow' })  // ← Явно следуем за редиректами
         .then(response => {
-          // Если успех — возвращаем ответ
+          // Если успех и это HTML — кэшируем
+          if (response.ok && response.headers.get('content-type').includes('text/html')) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, responseClone);
+            });
+          }
           return response;
         })
         .catch(() => {
           // Если сеть недоступна — ищем в кэше
           return caches.match(request)
             .then(cached => {
-              // Если нашли в кэше — возвращаем
               if (cached) return cached;
-              // Иначе пробуем главную или login
+              // Если нет точного совпадения — пробуем главную или login
               return caches.match('/')
                 .then(main => main || caches.match('/login'));
             });
