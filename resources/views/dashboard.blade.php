@@ -158,18 +158,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
+                        @php
                         $expenses = auth()->user()->expenses()
                             ->with('car:id,brand,model')
                             ->latest('date')
                             ->take(3)
                             ->get();
                         
+                        // 🔧 ИСПРАВЛЕНО: сортируем по created_at (дата создания), а не по due_date
                         $reminders = auth()->user()->reminders()
                             ->with('car:id,brand,model')
                             ->where('status', '!=', 'done')
-                            ->latest('due_date')
-                            ->take(2)
+                            ->latest('created_at')  // ← ВОТ ЭТА СТРОЧКА ЧИНИТ ВСЁ!
+                            ->take(3)
                             ->get();
                         
                         $categoryNames = [
