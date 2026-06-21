@@ -16,7 +16,9 @@
             <select name="car_id" id="car_id" class="form-select @error('car_id') is-invalid @enderror">
                 <option value="">Без привязки</option>
                 @foreach(auth()->user()->cars as $car)
-                    <option value="{{ $car->id }}" {{ old('car_id') == $car->id ? 'selected' : '' }}>
+                    <option value="{{ $car->id }}" 
+                            data-mileage="{{ $car->mileage ?? 0 }}"
+                            {{ old('car_id') == $car->id ? 'selected' : '' }}>
                         {{ $car->brand }} {{ $car->model }}
                     </option>
                 @endforeach
@@ -172,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Инициализация при загрузке
     showInfoTab(select?.value);
     
-    // 🧹 UI для блока пробега (твой старый код)
+    // 🧹 UI для блока пробега
     const carSelect = document.querySelector('select[name="car_id"]');
     const mileageBlock = document.getElementById('mileageBlock');
     const mileageToggle = document.getElementById('mileageToggle');
@@ -183,10 +185,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUI() {
         const hasCar = carSelect?.value;
         const isMileage = mileageToggle?.checked;
+        
         mileageBlock.style.display = hasCar ? 'block' : 'none';
         mileageFields.style.display = isMileage ? 'block' : 'none';
-        if (isMileage && mileageInterval?.value) {
-            calcNext.value = `Интервал: ${mileageInterval.value} км`;
+        
+        if (isMileage && hasCar && mileageInterval?.value) {
+            // 🔧 Получаем текущий пробег выбранного авто из data-атрибута
+            const selectedOption = carSelect.options[carSelect.selectedIndex];
+            const currentMileage = parseInt(selectedOption.dataset.mileage) || 0;
+            const interval = parseInt(mileageInterval.value) || 0;
+            const nextMileage = currentMileage + interval;
+            
+            // Форматируем числа с пробелами для читаемости
+            const formatNum = (n) => n.toLocaleString('ru-RU');
+            
+            calcNext.value = `${formatNum(nextMileage)} км (сейчас: ${formatNum(currentMileage)} + ${formatNum(interval)})`;
+        } else if (isMileage && !hasCar) {
+            calcNext.value = 'Выберите автомобиль';
+        } else if (isMileage && !mileageInterval?.value) {
+            calcNext.value = 'Введите интервал';
+        } else {
+            calcNext.value = '—';
         }
     }
 
