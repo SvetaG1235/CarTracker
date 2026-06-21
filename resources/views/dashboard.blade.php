@@ -138,7 +138,10 @@
 <!-- 📋 Лента последних действий -->
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>Последние действия</h4>
-    <a href="{{ route('expenses.index') }}" class="btn btn-sm btn-outline-app">Все записи</a>
+    <div class="btn-group" role="group">
+        <a href="{{ route('expenses.index') }}" class="btn btn-sm btn-outline-app">Все расходы</a>
+        <a href="{{ route('reminders.index') }}" class="btn btn-sm btn-outline-app">Все напоминания</a>
+    </div>
 </div>
 
 <!-- Таблица с обёрткой для скролла -->
@@ -163,7 +166,8 @@
                             ->get();
                         
                         $reminders = auth()->user()->reminders()
-                            ->where('status', 'active')
+                            ->with('car:id,brand,model')
+                            ->where('status', '!=', 'done')
                             ->latest('due_date')
                             ->take(2)
                             ->get();
@@ -187,7 +191,7 @@
                         $reminders->each(fn($r) => $feed->push([
                             'date' => $r->due_date,
                             'type' => 'Напоминание',
-                            'desc' => $r->title,
+                            'desc' => ($r->car?->brand ?? '') . ' ' . ($r->car?->model ?? '') . ' — ' . $r->title,
                             'val' => $typeNames[$r->type] ?? ucfirst($r->type)
                         ]));
                         $feed = $feed->sortByDesc('date')->take(5);
